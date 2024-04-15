@@ -22,7 +22,7 @@ function main()
     sampRegisterChatCommand(cfg.settings.command, Search)
     sampRegisterChatCommand("searchset", Settings)
 
-    if cfg.settings.reminder then sampAddChatMessage('{62C58D}[Chat Searcher]{FFFFFF}: /searchset /'..cfg.settings.command, -1) end
+    if cfg.settings.reminder then sampAddChatMessage('{62C58D}[Chat Searcher]{FFFFFF}: /searchset /'..cfg.settings.command..' {param}', -1) end
 
     wait(-1)
 end
@@ -38,6 +38,7 @@ end
 
 function Search(arg)
     arg = string.nlower(arg):gsub("([%^%$%(%)%%%.%[%]%*%+%-%?])", "%%%1") -- regex character escaping and lowering cirillic
+
     local search_result = {}
 
     for line in io.lines(cfg.settings.path) do
