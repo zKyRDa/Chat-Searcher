@@ -129,12 +129,16 @@ function Settings()
 
                 while sampIsDialogActive() do wait(100) end
 
-                local _, button, list, input = sampHasDialogRespond(558632)
+                local _, button, _, input = sampHasDialogRespond(558632)
                 
                 if button == 1 then
                     cfg.settings[values[list]] = input
-                    print(cfg.settings.command)
+
                     inicfg.save(cfg, 'Chat Searcher.ini')
+
+                    if list == 1 then
+                        sampRegisterChatCommand(cfg.settings.command, Search)
+                    end
                 end
             end
             goto ShowDialog
