@@ -42,7 +42,7 @@ function string.nlower(s) -- from Strings.lua
 end
 
 function Search(arg)
-    
+
     if not CheckPATH() then return end
 
     arg = string.nlower(arg):gsub("([%^%$%(%)%%%.%[%]%*%+%-%?])", "%%%1") -- regex character escaping and lowering cirillic
@@ -125,7 +125,6 @@ function Settings()
                     path = os.getenv("USERPROFILE") .. "\\Documents\\GTA San Andreas User Files\\SAMP\\chatlog.txt",
                     page_border = 30
                 }
-                inicfg.save(cfg, 'Chat Searcher.ini')
             else
                 sampShowDialog(
                     558632,
@@ -142,14 +141,13 @@ function Settings()
                 
                 if button == 1 then
                     cfg.settings[values[list]] = input
-
-                    inicfg.save(cfg, 'Chat Searcher.ini')
-
                     if list == 1 then
                         sampRegisterChatCommand(cfg.settings.command, Search)
                     end
                 end
             end
+
+            inicfg.save(cfg, 'Chat Searcher.ini')
             goto ShowDialog
         end
     end)
