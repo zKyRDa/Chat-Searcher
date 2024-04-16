@@ -18,7 +18,6 @@ local cfg = inicfg.load({
 }, 'Chat Searcher')
 inicfg.save(cfg, 'Chat Searcher.ini')
 
-
 function main()
     while not isSampAvailable() do wait(0) end
 
@@ -42,7 +41,6 @@ function string.nlower(s) -- from Strings.lua
 end
 
 function Search(arg)
-
     if not CheckPATH() then return end
 
     arg = string.nlower(arg):gsub("([%^%$%(%)%%%.%[%]%*%+%-%?])", "%%%1") -- regex character escaping and lowering cirillic
@@ -105,8 +103,8 @@ function Settings()
             558631,
             'Chat Searcher settings',
             table.concat(settings),
-            'Close',
             'Select',
+            'Close',
             4
         )
 
@@ -160,8 +158,8 @@ function CheckPATH()
                 558633,
                 '{ff4c5b}Chat Searcher error!',
                 "{FFFFFF}chatlog.txt not found on the path:\n {62C58D}".. cfg.settings.path .."\n{FFFFFF}Enter the correct path to the chatlog.txt",
-                'Close',
                 'Change',
+                'Close',
                 1
             )
     
@@ -172,11 +170,12 @@ function CheckPATH()
             if button == 1 then
                 cfg.settings.path = input
                 inicfg.save(cfg, 'Chat Searcher.ini')
+                CheckPATH()
             end
         end)
 
         return false
     end
-
+    
     return true
 end
