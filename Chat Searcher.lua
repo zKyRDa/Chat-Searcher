@@ -2,6 +2,7 @@ script_name("Chat Searcher")
 script_author("KyRDa")
 script_version('1.0.0')
 
+
 require 'lib.moonloader'
 local inicfg = require 'inicfg'
 
@@ -23,6 +24,8 @@ function main()
     sampRegisterChatCommand("searchset", Settings)
 
     if cfg.settings.reminder then sampAddChatMessage('{62C58D}[Chat Searcher]{FFFFFF}: /searchset /'..cfg.settings.command..' {param}', -1) end
+    
+    lua_thread.create(CheckPATH)
 
     wait(-1)
 end
@@ -60,8 +63,8 @@ function Search(arg)
         ::ShowDialog::
         sampShowDialog(
             558630,
-            'Search result, page ¹'..page ,
-            table.concat(search_result, '\n{FFFFFF}', (page - 1) * cfg.settings.page_border + 1, math.min(page * cfg.settings.page_border, #search_result)),
+            'Search result, {62C58D}page ¹'..page ,
+            "{FFFFFF}" .. table.concat(search_result, '\n{FFFFFF}', (page - 1) * cfg.settings.page_border + 1, math.min(page * cfg.settings.page_border, #search_result)),
             page <= 1 and "Close" or 'page '.. page - 1 .. ' <<',
             page >= limit_page and "Close" or ">> page ".. page + 1,
             0
@@ -145,4 +148,26 @@ function Settings()
             goto ShowDialog
         end
     end)
+end
+
+function CheckPATH()
+    if not doesFileExist(cfg.settings.path) then
+        sampShowDialog(
+            558633,
+            '{ff4c5b}Chat Searcher error!',
+            "{FFFFFF}chatlog.txt not found on the path:\n {62C58D}".. cfg.settings.path .."\n{FFFFFF}Enter the correct path to the chatlog.txt",
+            'Close',
+            'Change',
+            1
+        )
+
+        while sampIsDialogActive() do wait(100) end
+
+        local _, button, _, input = sampHasDialogRespond(558633)
+        
+        if button == 1 then
+            cfg.settings.path = input
+            inicfg.save(cfg, 'Chat Searcher.ini')
+        end
+    end
 end
