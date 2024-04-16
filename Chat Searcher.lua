@@ -1,10 +1,12 @@
 script_name("Chat Searcher")
 script_author("KyRDa")
 script_version('1.0.0')
+script_description('/searchset')
 
 
 require 'lib.moonloader'
 local inicfg = require 'inicfg'
+
 
 local cfg = inicfg.load({
     settings = {
@@ -25,7 +27,7 @@ function main()
 
     if cfg.settings.reminder then sampAddChatMessage('{62C58D}[Chat Searcher]{FFFFFF}: /searchset /'..cfg.settings.command..' {param}', -1) end
     
-    lua_thread.create(CheckPATH)
+    CheckPATH()
 
     wait(-1)
 end
@@ -40,6 +42,9 @@ function string.nlower(s) -- from Strings.lua
 end
 
 function Search(arg)
+    
+    if not CheckPATH() then return end
+
     arg = string.nlower(arg):gsub("([%^%$%(%)%%%.%[%]%*%+%-%?])", "%%%1") -- regex character escaping and lowering cirillic
 
     local search_result = {}
@@ -152,22 +157,28 @@ end
 
 function CheckPATH()
     if not doesFileExist(cfg.settings.path) then
-        sampShowDialog(
-            558633,
-            '{ff4c5b}Chat Searcher error!',
-            "{FFFFFF}chatlog.txt not found on the path:\n {62C58D}".. cfg.settings.path .."\n{FFFFFF}Enter the correct path to the chatlog.txt",
-            'Close',
-            'Change',
-            1
-        )
+        lua_thread.create(function ()
+            sampShowDialog(
+                558633,
+                '{ff4c5b}Chat Searcher error!',
+                "{FFFFFF}chatlog.txt not found on the path:\n {62C58D}".. cfg.settings.path .."\n{FFFFFF}Enter the correct path to the chatlog.txt",
+                'Close',
+                'Change',
+                1
+            )
+    
+            while sampIsDialogActive() do wait(100) end
+    
+            local _, button, _, input = sampHasDialogRespond(558633)
+            
+            if button == 1 then
+                cfg.settings.path = input
+                inicfg.save(cfg, 'Chat Searcher.ini')
+            end
+        end)
 
-        while sampIsDialogActive() do wait(100) end
-
-        local _, button, _, input = sampHasDialogRespond(558633)
-        
-        if button == 1 then
-            cfg.settings.path = input
-            inicfg.save(cfg, 'Chat Searcher.ini')
-        end
+        return false
     end
+
+    return true
 end
